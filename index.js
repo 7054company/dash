@@ -12,7 +12,7 @@ let loggedInUser = null; // Keep track of the logged-in user
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Serve static files (CSS, images, etc.)
-app.use('/styles', express.static(path.join(__dirname, 'styles'));
+app.use('/styles', express.static('styles'));
 
 // Serve the index page as the default page
 app.get('/', (req, res) => {
