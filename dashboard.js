@@ -45,7 +45,7 @@ router.get('/personal', isAuthenticated, (req, res) => {
 router.post('/update-password', isAuthenticated, (req, res) => {
     // Handle password update logic
     // You can validate, update, and store the new password here
-    // Example: 
+    // Example:
     const newPassword = req.body.newPassword;
     // Update the user's password in your data.txt or database
     // Redirect or respond with a success message
