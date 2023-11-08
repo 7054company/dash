@@ -8,7 +8,7 @@ const dashboard = require('./dashboard'); // Import the dashboard module
 app.use(express.urlencoded({ extended: false }));
 
 // Serve static files (CSS, images, etc.)
-app.use('/styles', express.static('styles'));
+app.use('/styles', express.static(path.join(__dirname, 'styles'));
 
 // Set the path to your data.txt file
 const dataFilePath = path.join(__dirname, 'data.txt');
@@ -24,29 +24,26 @@ function readUserData() {
     return users;
 }
 
-// Routes for the login page
-app.get('/', (req, res) => {
+// Route for the login page
+app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
 app.post('/login', (req, res) => {
+    // Authenticate the user
     const username = req.body.username;
     const password = req.body.password;
 
-    // Authenticate the user
     const users = readUserData();
     const user = users.find((u) => u.username === username && u.password === password);
 
     if (user) {
-        // Set the user in the request object
-        req.user = user;
-
         // Successful login, update the last login timestamp, IP, and redirect to the dashboard
         const now = new Date();
         user.lastLogin = now.toISOString();
         const userIP = req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         user.lastIPs.push(userIP);
-        
+
         // Store the updated data in data.txt (update your data.txt accordingly)
         const updatedData = users.map((u) => `${u.uid}:${u.username}:${u.password}:${u.lastLogin}:${u.lastIPs.join(',')}`).join('\n');
         fs.writeFileSync(dataFilePath, updatedData, 'utf8');
@@ -61,7 +58,10 @@ app.post('/login', (req, res) => {
 // Include the dashboard routes
 app.use('/dashboard', dashboard);
 
-// ... Other routes and middleware
+// Route to serve the index.html page at the root
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
 
 // Start the server
 const port = process.env.PORT || 3000;
