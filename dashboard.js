@@ -5,11 +5,12 @@ const path = require('path');
 
 // Middleware to check if the user is authenticated
 const isAuthenticated = (req, res, next) => {
-    // You can implement your authentication logic here
-    if () {
+    if (req.user) {
+        // User is authenticated, continue with the dashboard
         next();
     } else {
-        res.redirect('/login'); // Redirect to the login page if not authenticated
+        // User is not authenticated, redirect to the login page
+        res.redirect('/login');
     }
 };
 
@@ -40,16 +41,14 @@ router.get('/personal', isAuthenticated, (req, res) => {
     }
 });
 
-// Route to provide real-time user data as JSON
-router.get('/user-info', isAuthenticated, (req, res) => {
-    const users = readUserData();
-    const user = users.find((u) => u.username === req.user.username);
-
-    if (user) {
-        res.json(user);
-    } else {
-        res.status(404).json({ error: 'User not found' });
-    }
+// Route to handle password updates
+router.post('/update-password', isAuthenticated, (req, res) => {
+    // Handle password update logic
+    // You can validate, update, and store the new password here
+    // Example: 
+    const newPassword = req.body.newPassword;
+    // Update the user's password in your data.txt or database
+    // Redirect or respond with a success message
 });
 
 module.exports = router;
