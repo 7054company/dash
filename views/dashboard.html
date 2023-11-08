@@ -16,29 +16,38 @@
             </header>
             <section class="dashboard-section">
                 <h2>Personal Section</h2>
-                <div class="user-info">
-                    <p><strong>Username:</strong> JohnDoe</p>
-                    <p><strong>Last Login:</strong> 2023-11-08 12:00:00</p>
-                    <p><strong>Last IP Addresses:</strong> 192.168.1.100, 192.168.1.101, 192.168.1.102</p>
+                <div id="user-info">
+                    <!-- User information will be displayed here using JavaScript -->
                 </div>
                 <div class="password-update">
                     <h3>Update Password</h3>
-                    <form action="/update-password" method="POST">
-                        <label for="current-password">Current Password:</label>
-                        <input type="password" id="current-password" name="current-password" required><br>
-
-                        <label for="new-password">New Password:</label>
-                        <input type="password" id="new-password" name="new-password" required><br>
-
-                        <label for="confirm-password">Confirm New Password:</label>
-                        <input type="password" id="confirm-password" name="confirm-password" required><br>
-
-                        <button type="submit">Update Password</button>
+                    <form action="/dashboard/update-password" method="POST">
+                        <!-- Password update form -->
                     </form>
                 </div>
             </section>
-            <!-- Additional dashboard sections can be added here -->
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Fetch and display user information in real-time
+            function updateUserInfo() {
+                $.get('/dashboard/user-info', function (data) {
+                    $('#user-info').html(`
+                        <p><strong>Username:</strong> ${data.username}</p>
+                        <p><strong>Last Login:</strong> ${data.lastLogin}</p>
+                        <p><strong>Last IP Addresses:</strong> ${data.lastIPs.join(', ')}</p>
+                    `);
+                });
+            }
+
+            // Update user information initially and then at regular intervals
+            updateUserInfo();
+            setInterval(updateUserInfo, 60000); // Update every minute
+        });
+    </script>
 </body>
 </html>
