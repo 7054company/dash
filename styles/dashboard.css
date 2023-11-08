@@ -1,0 +1,70 @@
+/* Reset some default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Apply a background color */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+/* Style the dashboard container */
+.dashboard-container {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Style the sidebar */
+.sidebar {
+    width: 200px;
+    background-color: #0070f3;
+    color: #fff;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 20px;
+}
+
+/* Style the main content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Style the header */
+header {
+    background-color: #fff;
+    padding: 20px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Style sections in the main content */
+.dashboard-section {
+    background-color: #fff;
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Style buttons */
+button {
+    background-color: #0070f3;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #005cbf;
+}
