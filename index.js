@@ -48,6 +48,9 @@ app.post('/login', (req, res) => {
         const updatedData = users.map((u) => `${u.uid}:${u.username}:${u.password}:${u.lastLogin}:${u.lastIPs.join(',')}`).join('\n');
         fs.writeFileSync(dataFilePath, updatedData, 'utf8');
 
+        // Set the user object for authentication
+        req.user = user;
+
         res.redirect('/dashboard');
     } else {
         // Invalid credentials, show an error message or stay on the login page
