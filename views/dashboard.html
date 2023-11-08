@@ -5,49 +5,16 @@
     <link rel="stylesheet" type="text/css" href="/styles/main.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <div class="sidebar">
-            <!-- Sidebar content goes here -->
+    <header>
+        <h1>Welcome to Your Dashboard</h1>
+    </header>
+    <section class="personal-section">
+        <h2>Personal Information</h2>
+        <div>
+            <p><strong>Username:</strong> <span id="usernamePlaceholder"></span></p>
+            <p><strong>Last Login:</strong> <span id="lastLoginPlaceholder"></span></p>
+            <p><strong>Last IP Addresses:</strong> <span id="lastIPsPlaceholder"></span></p>
         </div>
-        <div class="main-content">
-            <header>
-                <h1>Welcome to Your Dashboard</h1>
-                <!-- Navigation and user info can go here -->
-            </header>
-            <section class="dashboard-section">
-                <h2>Personal Section</h2>
-                <div id="user-info">
-                    <!-- User information will be displayed here using JavaScript -->
-                </div>
-                <div class="password-update">
-                    <h3>Update Password</h3>
-                    <form action="/dashboard/update-password" method="POST">
-                        <!-- Password update form -->
-                    </form>
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-        $(document).ready(function () {
-            // Fetch and display user information in real-time
-            function updateUserInfo() {
-                $.get('/dashboard/user-info', function (data) {
-                    $('#user-info').html(`
-                        <p><strong>Username:</strong> ${data.username}</p>
-                        <p><strong>Last Login:</strong> ${data.lastLogin}</p>
-                        <p><strong>Last IP Addresses:</strong> ${data.lastIPs.join(', ')}</p>
-                    `);
-                });
-            }
-
-            // Update user information initially and then at regular intervals
-            updateUserInfo();
-            setInterval(updateUserInfo, 60000); // Update every minute
-        });
-    </script>
+    </section>
 </body>
 </html>
