@@ -40,10 +40,16 @@ router.get('/personal', isAuthenticated, (req, res) => {
     }
 });
 
-// Route to handle password updates
-router.post('/update-password', isAuthenticated, (req, res) => {
-    // Handle password update logic
-    // You can validate, update, and store the new password here
+// Route to provide real-time user data as JSON
+router.get('/user-info', isAuthenticated, (req, res) => {
+    const users = readUserData();
+    const user = users.find((u) => u.username === req.user.username);
+
+    if (user) {
+        res.json(user);
+    } else {
+        res.status(404).json({ error: 'User not found' });
+    }
 });
 
 module.exports = router;
