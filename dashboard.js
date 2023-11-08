@@ -6,7 +6,7 @@ const path = require('path');
 // Middleware to check if the user is authenticated
 const isAuthenticated = (req, res, next) => {
     // You can implement your authentication logic here
-    if (/* Check if the user is authenticated */) {
+    if (req.isAuthenticated()) {
         next();
     } else {
         res.redirect('/login'); // Redirect to the login page if not authenticated
