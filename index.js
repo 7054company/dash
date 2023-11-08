@@ -8,7 +8,7 @@ const dashboard = require('./dashboard'); // Import the dashboard module
 app.use(express.urlencoded({ extended: false }));
 
 // Serve static files (CSS, images, etc.)
-app.use('/styles', express.static('styles'));
+app.use('/styles', express.static(path.join(__dirname, 'styles'));
 
 // Set the path to your data.txt file
 const dataFilePath = path.join(__dirname, 'data.txt');
@@ -24,7 +24,7 @@ function readUserData() {
     return users;
 }
 
-// Route for the login page
+// Route for the login page at /login
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
@@ -38,7 +38,7 @@ app.post('/login', (req, res) => {
     const user = users.find((u) => u.username === username && u.password === password);
 
     if (user) {
-        // Successful login, update the last login timestamp, IP, and redirect to the dashboard
+        // Successful login, update the last login timestamp, IP, and set the user object
         const now = new Date();
         user.lastLogin = now.toISOString();
         const userIP = req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
@@ -58,7 +58,7 @@ app.post('/login', (req, res) => {
     }
 });
 
-// Include the dashboard routes
+// Include the dashboard routes at /dashboard
 app.use('/dashboard', dashboard);
 
 // Route to serve the index.html page at the root
