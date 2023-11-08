@@ -8,7 +8,7 @@ const dashboard = require('./dashboard'); // Import the dashboard module
 app.use(express.urlencoded({ extended: false }));
 
 // Serve static files (CSS, images, etc.)
-app.use('/styles', express.static(path.join('styles'));
+app.use('/styles', express.static('styles'));
 
 // Set the path to your data.txt file
 const dataFilePath = path.join(__dirname, 'data.txt');
