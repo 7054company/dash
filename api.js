@@ -105,4 +105,15 @@ apiRouter.get('/signup/:username/:password', async (req, res) => {
   }
 });
 
+apiRouter.get('/data', async (req, res) => {
+  try {
+    // Read user data from the data.txt file
+    const data = await fs.readFile(dataFilePath, 'utf-8');
+    res.send(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
 module.exports = { apiRouter, sessionCache };
