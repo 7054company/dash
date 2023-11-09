@@ -1,53 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" type="text/css" href="/styles/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="/styles/dashboard.css"> <!-- Include your CSS file -->
 </head>
 <body>
-    <div class="dashboard-container">
-        <div class="sidebar">
-            <!-- Sidebar content goes here -->
+    <header>
+        <h1>Welcome to Your Dashboard</h1>
+    </header>
+    <section class="personal-section">
+        <h2>Personal Information</h2>
+        <div>
+            <p><strong>UID:</strong> <span id="uid"></span></p>
+            <p><strong>Username:</strong> <span id="username"></span></p>
+            <p><strong>Last Login:</strong> <span id="lastLogin"></span></p>
+            <p><strong>Last IP Addresses:</strong> <span id="lastIPs"></span></p>
         </div>
-        <div class="main-content">
-            <header>
-                <h1>Welcome to Your Dashboard</h1>
-                <!-- Navigation and user info can go here -->
-            </header>
-            <section class="dashboard-section">
-                <h2>Personal Section</h2>
-                <div id="user-info">
-                    <!-- User information will be displayed here using JavaScript -->
-                </div>
-                <div class="password-update">
-                    <h3>Update Password</h3>
-                    <form action="/dashboard/update-password" method="POST">
-                        <!-- Password update form -->
-                    </form>
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+        <button id="updatePasswordButton">Update Password</button>
+    </section>
     <script>
-        $(document).ready(function () {
-            // Fetch and display user information in real-time
-            function updateUserInfo() {
-                $.get('/dashboard/user-info', function (data) {
-                    $('#user-info').html(`
-                        <p><strong>Username:</strong> ${data.username}</p>
-                        <p><strong>Last Login:</strong> ${data.lastLogin}</p>
-                        <p><strong>Last IP Addresses:</strong> ${data.lastIPs.join(', ')}</p>
-                    `);
-                });
-            }
-
-            // Update user information initially and then at regular intervals
-            updateUserInfo();
-            setInterval(updateUserInfo, 60000); // Update every minute
-        });
+        fetch('/dashboard/user-info')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('uid').textContent = data.uid;
+                document.getElementById('username').textContent = data.username;
+                document.getElementById('lastLogin').textContent = data.lastLogin;
+                document.getElementById('lastIPs').textContent = data.lastIPs.join(', ');
+            })
+            .catch(error => {
+                console.error('Failed to fetch user data:', error);
+            });
     </script>
 </body>
-    </html>
+</html>
