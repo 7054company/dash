@@ -31,7 +31,29 @@ async function getNextUid() {
 
 apiRouter.get('/login/:username/:password', async (req, res) => {
   try {
-    // ... (unchanged login logic)
+    const { username, password } = req.params;
+
+    // Read user data from the data.txt file
+    const data = await fs.readFile(dataFilePath, 'utf-8');
+    const users = data.split('\n').map(line => {
+      const [uid, u, p, sessionId] = line.split(' ');
+      return { uid, username: u, password: p, sessionId };
+    });
+
+    // Check if the provided username and password match any user
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (user) {
+      // Generate a unique session ID
+      const sessionId = generateSessionId();
+
+      // Store the session ID in the session cache
+      sessionCache.set(sessionId, user);
+
+      res.json({ success: true, message: 'Login successful', user, sessionId });
+    } else {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Internal server error' });
@@ -84,4 +106,3 @@ apiRouter.get('/signup/:username/:password', async (req, res) => {
 });
 
 module.exports = { apiRouter, sessionCache };
-
