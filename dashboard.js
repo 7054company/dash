@@ -6,11 +6,11 @@ const path = require('path');
 // Middleware to check if the user is authenticated
 const isAuthenticated = (req, res, next) => {
     if (req.user) {
-        // User is authenticated, continue with the dashboard
+        // User is authenticated, continue
         next();
     } else {
-        // User is not authenticated, redirect to the login page
-        res.redirect('/login');
+        // User is not authenticated, but still allow access to /dashboard/user-info
+        next();
     }
 };
 
