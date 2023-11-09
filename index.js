@@ -1,42 +1,4 @@
 
-// login.js
-
-const fs = require('fs');
-const crypto = require('crypto');
-
-function generateSessionID() {
-  return crypto.randomBytes(16).toString('hex');
-}
-
-function authenticateUser(username, password) {
-  const data = fs.readFileSync('data.txt', 'utf-8').split('\n');
-
-  for (let i = 0; i < data.length; i++) {
-    const [uid, storedUsername, storedPassword] = data[i].split(' ');
-
-    if (username === storedUsername && password === storedPassword) {
-      // Generate a new session ID for the user
-      const newSessionID = generateSessionID();
-      data[i] = `${uid} ${storedUsername} ${storedPassword} ${newSessionID}`;
-
-      // Write the updated data back to the file
-      fs.writeFileSync('data.txt', data.join('\n'));
-
-      return newSessionID;
-    }
-  }
-
-  return null;
-}
-
-module.exports = {
-  authenticateUser,
-};
-```
-
-2. In your `index.js`, you can modify the login logic accordingly:
-
-```javascript
 // index.js
 
 const express = require('express');
