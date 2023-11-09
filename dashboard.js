@@ -11,18 +11,20 @@ function readUserData() {
     const data = fs.readFileSync(dataFilePath, 'utf8');
     const lines = data.split('\n');
     const users = lines.map((line) => {
-        const [uid, username, password, lastLogin, lastIPs] = line.split(':');
-        return { uid, username, password, lastLogin, lastIPs: lastIPs.split(',') };
+        const [uid, username, password, lastLogin, sessionId, ...lastIPs] = line.split(':');
+        return { uid, username, password, lastLogin, sessionId, lastIPs: lastIPs.split(',') };
     });
     return users;
 }
 
-// API endpoint to fetch user info (username, IP, timestamp) using the currently logged-in user
-router.get('/user-info', (req, res) => {
-    if (req.session && req.session.user) {
-        const loggedInUsername = req.session.user.username;
-        const users = readUserData();
-        const user = users.find((u) => u.username === loggedInUsername);
+// Route for the dashboard
+router.get('/', (req, res) => {
+    // Authenticate and get user information
+    const users = readUserData();
+    const loggedInUser = req.session.user;
+
+    if (loggedInUser) {
+        const user = users.find((u) => u.username === loggedInUser.username);
 
         if (user) {
             const userInfo = {
@@ -31,12 +33,12 @@ router.get('/user-info', (req, res) => {
                 lastIPs: user.lastIPs,
             };
 
-            res.json(userInfo);
+            res.render('dashboard', { user: userInfo });
         } else {
-            res.status(404).json({ message: 'User not found in data.txt' });
+            res.status(404).send('User not found');
         }
     } else {
-        res.status(403).json({ message: 'User not authenticated' });
+        res.status(403).send('User not authenticated');
     }
 });
 
