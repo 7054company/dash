@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/styles', express.static('styles'));
 
 // Use the apiRouter
-app.use('/dashboard', dashboardRouter);
+app.use('/dashboard', apiRouter);
 
 // Serve the index page as the default page
 app.get('/', (req, res) => {
