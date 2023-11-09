@@ -17,8 +17,8 @@ function readUserData() {
     return users;
 }
 
-// Route for the dashboard
-router.get('/', (req, res) => {
+// API endpoint to get user information
+router.get('/api/user', (req, res) => {
     // Authenticate and get user information
     const users = readUserData();
     const loggedInUser = req.session.user;
@@ -33,12 +33,12 @@ router.get('/', (req, res) => {
                 lastIPs: user.lastIPs,
             };
 
-            res.render('dashboard', { user: userInfo });
+            res.json(userInfo);
         } else {
-            res.status(404).send('User not found');
+            res.status(404).json({ error: 'User not found' });
         }
     } else {
-        res.status(403).send('User not authenticated');
+        res.status(403).json({ error: 'User not authenticated' });
     }
 });
 
