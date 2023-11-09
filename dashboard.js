@@ -18,7 +18,7 @@ function readUserData() {
 }
 
 // API endpoint to get user information
-router.get('/api/user', (req, res) => {
+router.get('/dashboard/user', (req, res) => {
     // Authenticate and get user information
     const users = readUserData();
     const loggedInUser = req.session.user;
