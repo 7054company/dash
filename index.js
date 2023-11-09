@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const apiRouter = require('./api'); // assuming both files are in the same directory
 
 const app = express();
 const port = 3000;
@@ -14,80 +15,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Serve static files (CSS, images, etc.)
 app.use('/styles', express.static('styles'));
 
+// Use the apiRouter
+app.use('/dashboard', apiRouter);
+
 // Serve the index page as the default page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-// Serve HTML pages
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'login.html'));
-});
-
-app.get('/dashboard', (req, res) => {
-    if (loggedInUser) {
-        res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
-    } else {
-        res.send('You need to log in first.');
-    }
-});
-
-// Handle login
-app.post('/login', (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-
-    // Read the data from the data.txt file
-    const data = fs.readFileSync(dataFilePath, 'utf8');
-    const lines = data.split('\n');
-    loggedInUser = null;
-
-    // Check if the entered username and password match any in the data.txt file
-    for (const line of lines) {
-        const [uid, storedUsername, storedPassword, lastLogin, ...lastIPs] = line.split(':');
-        if (username === storedUsername && password === storedPassword) {
-            loggedInUser = storedUsername;
-
-            // Generate a session ID
-            const newSessionId = generateSessionId();
-
-            // Update the last login timestamp and session ID in data.txt
-            const now = new Date();
-            const lastLoginDate = now.toISOString();
-
-            // Add the user's current IP address to the list
-            const userIP = req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-            lastIPs.push(userIP);
-
-            // Store up to the last 3 IP addresses
-            const recentIPs = lastIPs.slice(-3);
-
-            const updatedLine = `${uid}:${storedUsername}:${storedPassword}:${lastLoginDate}:${newSessionId}:${recentIPs.join(',')}`;
-
-            // Replace the line with the updated data
-            const updatedData = lines.map((dataLine) => {
-                return dataLine.startsWith(username) ? updatedLine : dataLine;
-            }).join('\n');
-
-            fs.writeFileSync(dataFilePath, updatedData, 'utf8');
-            break;
-        }
-    }
-
-    if (loggedInUser) {
-        // Successful login, redirect to the dashboard
-        res.redirect('/dashboard');
-    } else {
-        // Invalid credentials, show an error message
-        res.send('Invalid username or password. Please try again.');
-    }
-});
+// ... (other routes)
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
-
-// Function to generate a random session ID
-function generateSessionId() {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-}
