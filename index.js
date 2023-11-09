@@ -1,8 +1,4 @@
-I apologize for the misunderstanding. If you want to use the session ID as the primary authentication method and you don't want to use a secret key, you can modify the code as follows:
 
-1. In the `login.js` file, you can remove the usage of the session ID and simplify the code to generate and update session IDs:
-
-```javascript
 // login.js
 
 const fs = require('fs');
