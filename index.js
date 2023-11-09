@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const apiRouter = require('./api'); // assuming both files are in the same directory
+const apiRouter = require('./dashboard'); // assuming both files are in the same directory
 
 const app = express();
 const port = 3000;
@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/styles', express.static('styles'));
 
 // Use the apiRouter
-app.use('/dashboard', apiRouter);
+app.use('/dashboard', dashboardRouter);
 
 // Serve the index page as the default page
 app.get('/', (req, res) => {
