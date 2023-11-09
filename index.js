@@ -6,10 +6,17 @@ const fs = require('fs');
 const app = express();
 const port = 3000;
 
+const dashboardRouter = require('./dashboard');
+
 const dataFilePath = 'data.txt'; // Path to the data file
 let loggedInUser = null; // Keep track of the logged-in user
 
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// Use the dashboard routes
+app.use('/dashboard', dashboardRouter);
+
+// ...
 
 // Serve static files (CSS, images, etc.)
 app.use('/styles', express.static('styles'));
