@@ -17,11 +17,11 @@ function readUserData() {
     return users;
 }
 
-// API endpoint to fetch user info (username, IP, timestamp) of the current logged-in user
+// API endpoint to fetch user info (username, IP, timestamp) without session verification
 router.get('/user-info', (req, res) => {
-    if (req.session && req.session.user) {
-        // If user is logged in, fetch user data from session
-        const username = req.session.user.username;
+    const username = req.query.username; // Assume username is passed as a query parameter
+
+    if (username) {
         const users = readUserData();
         const user = users.find((u) => u.username === username);
 
@@ -37,8 +37,7 @@ router.get('/user-info', (req, res) => {
             res.status(404).json({ message: 'User not found in data.txt' });
         }
     } else {
-        // User is not authenticated, return an error or redirect as needed
-        res.status(403).json({ message: 'User not authenticated' });
+        res.status(400).json({ message: 'Username not provided' });
     }
 });
 
