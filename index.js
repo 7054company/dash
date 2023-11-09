@@ -40,4 +40,3 @@ app.listen(port, () => {
 });
 ```
 
-With these changes, the session ID is used for authentication, and there's no need for a secret key. The session ID is generated and updated in the `login.js` file and used for user verification in the `index.js` file.
