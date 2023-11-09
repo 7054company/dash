@@ -41,20 +41,19 @@ router.get('/personal', isAuthenticated, (req, res) => {
     }
 });
 
-// API endpoint to fetch user data
+// API endpoint to fetch user info (username, IP, timestamp)
 router.get('/user-info', isAuthenticated, (req, res) => {
     const users = readUserData();
     const user = users.find((u) => u.username === req.user.username);
 
     if (user) {
-        const userData = {
-            uid: user.uid,
+        const userInfo = {
             username: user.username,
             lastLogin: user.lastLogin,
             lastIPs: user.lastIPs,
         };
 
-        res.json(userData);
+        res.json(userInfo);
     } else {
         res.status(404).json({ message: 'User not found' });
     }
