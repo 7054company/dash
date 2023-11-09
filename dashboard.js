@@ -34,7 +34,7 @@ router.get('/user-info', (req, res) => {
 
             res.json(userInfo);
         } else {
-            res.status(404).json({ message: 'User not found' });
+            res.status(404).json({ message: 'User not found in data.txt' });
         }
     } else {
         // User is not authenticated, return an error or redirect as needed
