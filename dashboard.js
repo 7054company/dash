@@ -23,7 +23,7 @@ function readUserData() {
     const lines = data.split('\n');
     const users = lines.map((line) => {
         const [uid, username, password, lastLogin, lastIPs] = line.split(':');
-        return { uid, username, password, lastLogin, lastIPs: lastIPs.split(',') };
+        return { uid, username, lastLogin, lastIPs: lastIPs.split(',') };
     });
     return users;
 }
@@ -41,14 +41,23 @@ router.get('/personal', isAuthenticated, (req, res) => {
     }
 });
 
-// Route to handle password updates
-router.post('/update-password', isAuthenticated, (req, res) => {
-    // Handle password update logic
-    // You can validate, update, and store the new password here
-    // Example:
-    const newPassword = req.body.newPassword;
-    // Update the user's password in your data.txt or database
-    // Redirect or respond with a success message
+// API endpoint to fetch user data
+router.get('/user-info', isAuthenticated, (req, res) => {
+    const users = readUserData();
+    const user = users.find((u) => u.username === req.user.username);
+
+    if (user) {
+        const userData = {
+            uid: user.uid,
+            username: user.username,
+            lastLogin: user.lastLogin,
+            lastIPs: user.lastIPs,
+        };
+
+        res.json(userData);
+    } else {
+        res.status(404).json({ message: 'User not found' });
+    }
 });
 
 module.exports = router;
