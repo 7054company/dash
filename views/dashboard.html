@@ -2,36 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" type="text/css" href="/styles/dashboard.css"> <!-- Include your CSS file -->
 </head>
 <body>
-    <header>
-        <h1>Welcome to Your Dashboard</h1>
-    </header>
-    <section class="personal-section">
-        <h2>Personal Information</h2>
-        <div>
-            <p><strong>UID:</strong> <span id="uid"></span></p>
-            <p><strong>Username:</strong> <span id="username"></span></p>
-            <p><strong>Last Login:</strong> <span id="lastLogin"></span></p>
-            <p><strong>Last IP Addresses:</strong> <span id="lastIPs"></span></p>
-        </div>
-        <button id="updatePasswordButton">Update Password</button>
-    </section>
+    <h1>Welcome to the Dashboard</h1>
+    <p id="usernamePlaceholder">Logged-in as </p>
+    <!-- Add other dashboard content here -->
+
     <script>
-        fetch('/dashboard/user-info')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('uid').textContent = data.uid;
-                document.getElementById('username').textContent = data.username;
-                document.getElementById('lastLogin').textContent = data.lastLogin;
-                document.getElementById('lastIPs').textContent = data.lastIPs.join(', ');
-            })
-            .catch(error => {
-                console.error('Failed to fetch user data:', error);
-            });
+        // Assuming you have a global variable loggedInUsername set by your server
+        // Replace this with your actual variable or session data handling
+        const loggedInUsername = '<%= user.username %>';
+        
+        // Update the content of the placeholder with the username
+        document.getElementById('usernamePlaceholder').innerText += loggedInUsername;
     </script>
 </body>
 </html>
