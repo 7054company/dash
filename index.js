@@ -6,17 +6,10 @@ const fs = require('fs');
 const app = express();
 const port = 3000;
 
-const dashboardRouter = require('./dashboard');
-
 const dataFilePath = 'data.txt'; // Path to the data file
 let loggedInUser = null; // Keep track of the logged-in user
 
 app.use(bodyParser.urlencoded({ extended: false }));
-
-// Use the dashboard routes
-app.use('/dashboard', dashboardRouter);
-
-// ...
 
 // Serve static files (CSS, images, etc.)
 app.use('/styles', express.static('styles'));
@@ -55,7 +48,10 @@ app.post('/login', (req, res) => {
         if (username === storedUsername && password === storedPassword) {
             loggedInUser = storedUsername;
 
-            // Update the last login timestamp
+            // Generate a session ID
+            const newSessionId = generateSessionId();
+
+            // Update the last login timestamp and session ID in data.txt
             const now = new Date();
             const lastLoginDate = now.toISOString();
 
@@ -66,7 +62,7 @@ app.post('/login', (req, res) => {
             // Store up to the last 3 IP addresses
             const recentIPs = lastIPs.slice(-3);
 
-            const updatedLine = `${uid}:${storedUsername}:${storedPassword}:${lastLoginDate}:${recentIPs.join(',')}`;
+            const updatedLine = `${uid}:${storedUsername}:${storedPassword}:${lastLoginDate}:${newSessionId}:${recentIPs.join(',')}`;
 
             // Replace the line with the updated data
             const updatedData = lines.map((dataLine) => {
@@ -90,3 +86,8 @@ app.post('/login', (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+// Function to generate a random session ID
+function generateSessionId() {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
