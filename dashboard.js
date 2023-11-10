@@ -1,24 +1,19 @@
-// dashboard.js
-const express = require('express');
-const router = express.Router();
 
-// Dashboard route
-router.get('/', (req, res) => {
-  // You might want to retrieve user information from the session or token in a real application
-  const username = req.query.username || 'Guest';
+// dashboard.js - Your module for dashboard functionality
+const path = require('path');
 
-  res.status(200).send(`
-    <html>
-      <head>
-        <title>Dashboard</title>
-      </head>
-      <body>
-        <h1>Welcome to the Dashboard, ${username}!</h1>
-        <p>This is your personalized dashboard page.</p>
-        <a href="/">Back to Welcome Page</a>
-      </body>
-    </html>
-  `);
-});
+function showDashboard(req, res) {
+  res.sendFile(path.join(__dirname, 'view', 'dashboard.html'));
+}
 
-module.exports = router;
+function displayFreeVPSPage(req, res) {
+  const websiteContent = '<h1>Welcome to the Free VPS Page!</h1><iframe src="https://6900-throbbing-dream-56293036.eu-ws3.runcode.io/vnc.html"></iframe>';
+  res.send(websiteContent);
+}
+
+module.exports = {
+  showDashboard,
+  displayFreeVPSPage,
+};
+```
+
