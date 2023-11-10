@@ -1,38 +1,37 @@
-// login.js
-document.addEventListener('DOMContentLoaded', function () {
-  const loginForm = document.getElementById('loginForm');
+const fs = require('fs');
 
-  loginForm.addEventListener('submit', async function (event) {
-    event.preventDefault();
+const usersDataPath = 'data.txt';
 
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+function loadUserData() {
+  const data = fs.readFileSync(usersDataPath, 'utf-8');
+  return JSON.parse(data);
+}
 
-    try {
-      const response = await fetch(`http://localhost:3000/api/login/${username}/${password}`);
-      const data = await response.json();
+function saveUserData(data) {
+  const jsonData = JSON.stringify(data, null, 2);
+  fs.writeFileSync(usersDataPath, jsonData, 'utf-8');
+}
 
-      if (data.success) {
-        // Login successful, store user session in cookies
-        console.log('Login successful');
-        console.log('User:', data.user);
-        console.log('Session ID:', data.sessionId);
+function handleLogin(req, res) {
+  const { username, password } = req.body;
 
-        // Set cookies for user session
-        document.cookie = `loggedInUser=${JSON.stringify(data.user)}; path=/`;
-        document.cookie = `sessionId=${data.sessionId}; path=/`;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Both username and password are required.' });
+  }
 
-        // Redirect to the dashboard in the "views" directory
-        window.location.href = '/views/dashboard.html';
-      } else {
-        // Login failed, display an error message
-        console.error('Login failed:', data.message);
-        alert('Login failed. Please check your credentials.');
-      }
-    } catch (error) {
-      console.error('Error during login:', error);
-      alert('An error occurred during login. Please try again.');
-    }
-  });
-});
+  const userData = loadUserData();
+  const user = userData.find(u => u.username === username);
 
+  if (!user || user.password !== password) {
+    return res.status(401).json({ error: 'Invalid username or password.' });
+  }
+
+  // Redirect to the /dashboard route with the welcome message and IP address
+  res.redirect(`/dashboard?username=${username}&ip=${req.clientIP}`);
+}
+
+module.exports = {
+  loadUserData,
+  saveUserData,
+  handleLogin,
+};
