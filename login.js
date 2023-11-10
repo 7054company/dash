@@ -1,79 +1,38 @@
-
 // login.js
+document.addEventListener('DOMContentLoaded', function () {
+  const loginForm = document.getElementById('loginForm');
 
-const fs = require('fs');
-const crypto = require('crypto');
+  loginForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
 
-function generateSessionID() {
-  return crypto.randomBytes(16).toString('hex');
-}
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-function authenticateUser(username, password) {
-  const data = fs.readFileSync('data.txt', 'utf-8').split('\n');
+    try {
+      const response = await fetch(`http://localhost:3000/api/login/${username}/${password}`);
+      const data = await response.json();
 
-  for (let i = 0; i < data.length; i++) {
-    const [uid, storedUsername, storedPassword] = data[i].split(' ');
+      if (data.success) {
+        // Login successful, store user session in cookies
+        console.log('Login successful');
+        console.log('User:', data.user);
+        console.log('Session ID:', data.sessionId);
 
-    if (username === storedUsername && password === storedPassword) {
-      // Generate a new session ID for the user
-      const newSessionID = generateSessionID();
-      data[i] = `${uid} ${storedUsername} ${storedPassword} ${newSessionID}`;
+        // Set cookies for user session
+        document.cookie = `loggedInUser=${JSON.stringify(data.user)}; path=/`;
+        document.cookie = `sessionId=${data.sessionId}; path=/`;
 
-      // Write the updated data back to the file
-      fs.writeFileSync('data.txt', data.join('\n'));
-
-      return newSessionID;
+        // Redirect to the dashboard in the "views" directory
+        window.location.href = '/views/dashboard.html';
+      } else {
+        // Login failed, display an error message
+        console.error('Login failed:', data.message);
+        alert('Login failed. Please check your credentials.');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      alert('An error occurred during login. Please try again.');
     }
-  }
-
-  return null;
-}
-
-module.exports = {
-  authenticateUser,
-};
-```
-
-2. In your `index.js`, you can modify the login logic accordingly:
-
-```javascript
-// index.js
-
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
-const session = require('express-session');
-const login = require('./login');
-
-app.use(express.urlencoded({ extended: true }));
-app.use(session({ secret: 'your-secret-key', resave: false, saveUninitialized: false }));
-
-app.use(express.static(__dirname + '/views'));
-app.use('/styles', express.static(__dirname + '/styles'));
-
-app.get('/', (req, res) => {
-  // Check if the user is already logged in
-  if (req.session.uid) {
-    res.send(`Welcome, User with Session ID ${req.session.uid}`);
-  } else {
-    res.sendFile(__dirname + '/views/index.html');
-  }
+  });
 });
 
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  const sessionID = login.authenticateUser(username, password);
-
-  if (sessionID !== null) {
-    // Store the user's session ID in the session to keep them logged in
-    req.session.uid = sessionID;
-    res.send(`Login successful. Welcome, User with Session ID ${sessionID}`);
-  } else {
-    res.send('Login failed. Incorrect username or password.');
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-```
