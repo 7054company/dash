@@ -1,23 +1,4 @@
-Certainly, if you want to keep the `dashboard.js` as it is and modify only the routing logic in `index.js` to display the website page content on `/dashboard/free-vps`, you can do the following:
 
-**dashboard.js:**
-```javascript
-// dashboard.js - Your module for dashboard functionality
-const path = require('path');
-
-function showDashboard(req, res) {
-  res.sendFile(path.join(__dirname, 'view', 'dashboard.html'));
-}
-
-module.exports = {
-  showDashboard,
-};
-```
-
-Now, modify the `index.js` file:
-
-**Updated index.js:**
-```javascript
 const express = require('express');
 const path = require('path');
 const dashboard = require('./dashboard'); // Import your dashboard module
