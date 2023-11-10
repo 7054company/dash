@@ -16,7 +16,7 @@ app.get('/dashboard', (req, res) => {
 });
 
 // Route for displaying the free VPS page with iframe
-app.get('/dashboard/free-vps', (req, res) => {
+app.get('/f', (req, res) => {
   const websiteURL = 'https://6900-throbbing-dream-56293036.eu-ws3.runcode.io/vnc.html';
   res.send(`
     <html>
