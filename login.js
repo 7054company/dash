@@ -1,37 +1,37 @@
+
+// login.js
+const express = require('express');
+const router = express.Router();
 const fs = require('fs');
 
-const usersDataPath = 'data.txt';
+// Read user data from data.txt
+const usersPath = path.join(__dirname, 'data.txt');
+let users = [];
 
-function loadUserData() {
-  const data = fs.readFileSync(usersDataPath, 'utf-8');
-  return JSON.parse(data);
+try {
+  const data = fs.readFileSync(usersPath, 'utf-8');
+  users = JSON.parse(data);
+} catch (error) {
+  console.error('Error reading data.txt:', error);
 }
 
-function saveUserData(data) {
-  const jsonData = JSON.stringify(data, null, 2);
-  fs.writeFileSync(usersDataPath, jsonData, 'utf-8');
-}
-
-function handleLogin(req, res) {
+// Login route
+router.post('/', (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
     return res.status(400).json({ error: 'Both username and password are required.' });
   }
 
-  const userData = loadUserData();
-  const user = userData.find(u => u.username === username);
+  const user = users.find(u => u.username === username && u.password === password);
 
-  if (!user || user.password !== password) {
+  if (!user) {
     return res.status(401).json({ error: 'Invalid username or password.' });
   }
 
-  // Redirect to the /dashboard route with the welcome message and IP address
-  res.redirect(`/dashboard?username=${username}&ip=${req.clientIP}`);
-}
+  // You might want to implement a session or token mechanism for a real application
+  // For this example, just sending a success message
+  res.status(200).json({ message: 'Login successful!' });
+});
 
-module.exports = {
-  loadUserData,
-  saveUserData,
-  handleLogin,
-};
+module.exports = router;
