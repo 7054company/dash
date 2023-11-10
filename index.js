@@ -25,7 +25,7 @@ app.get('/f', (req, res) => {
       </head>
       <body>
         <h1>Welcome to Free VPS</h1>
-        <iframe src="${websiteURL}" width="100%" height="600"></iframe>
+        <iframe src="${websiteURL}" width="100%" height="800"></iframe>
       </body>
     </html>
   `);
