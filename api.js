@@ -1,119 +1,146 @@
-// api.js
 const express = require('express');
-const fs = require('fs/promises');
+const router = express.Router();
+const fs = require('fs').promises;
 const path = require('path');
-const crypto = require('crypto');
 
-const apiRouter = express.Router();
+// Placeholder for in-memory user data (replace with your database logic)
+const users = [];
 
-const dataFilePath = path.join(__dirname, 'data.txt');
-const sessionCache = new Map();
+// Middleware to check if the user is logged in
+function isAuthenticated(req, res, next) {
+  const loggedInUser = req.cookies.loggedInUser;
+  const sessionId = req.cookies.sessionId;
 
-function generateSessionId() {
-  return crypto.randomBytes(16).toString('hex');
-}
-
-async function getNextUid() {
-  try {
-    const data = await fs.readFile(dataFilePath, 'utf-8');
-    const users = data.split('\n').map(line => {
-      const [uid] = line.split(' ');
-      return parseInt(uid);
-    });
-
-    const nextUid = users.length + 1;
-    return nextUid;
-  } catch (error) {
-    console.error(error);
-    throw new Error('Error generating UID');
-  }
-}
-
-apiRouter.get('/login/:username/:password', async (req, res) => {
-  try {
-    const { username, password } = req.params;
-
-    // Read user data from the data.txt file
-    const data = await fs.readFile(dataFilePath, 'utf-8');
-    const users = data.split('\n').map(line => {
-      const [uid, u, p, sessionId] = line.split(' ');
-      return { uid, username: u, password: p, sessionId };
-    });
-
-    // Check if the provided username and password match any user
-    const user = users.find(u => u.username === username && u.password === password);
-
+  if (loggedInUser && sessionId) {
+    const user = users.find(u => u.username === loggedInUser.username && u.sessionId === sessionId);
     if (user) {
-      // Generate a unique session ID
-      const sessionId = generateSessionId();
-
-      // Store the session ID in the session cache
-      sessionCache.set(sessionId, user);
-
-      res.json({ success: true, message: 'Login successful', user, sessionId });
+      req.currentUser = user; // Attach the user data to the request
+      next();
     } else {
-      res.status(401).json({ success: false, message: 'Invalid credentials' });
+      res.status(401).json({ error: 'Unauthorized' });
+    }
+  } else {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+}
+
+// API endpoint to get the current logged-in user data
+router.get('/user', isAuthenticated, async (req, res) => {
+  try {
+    // Access the current user data from the request
+    const { username, sessionId } = req.currentUser;
+
+    // Read the data.txt file content
+    const filePath = path.join(__dirname, 'data.txt');
+    const fileContent = await fs.readFile(filePath, 'utf-8');
+
+    // Find the user's data in the file content
+    const userDataRegex = new RegExp(`^${username} ${sessionId}$`, 'm');
+    const userDataMatch = fileContent.match(userDataRegex);
+
+    if (userDataMatch) {
+      res.json({
+        username,
+        sessionId,
+        // Add other user properties as needed
+      });
+    } else {
+      res.status(401).json({ error: 'Unauthorized' });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error('Error reading data.txt:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-apiRouter.get('/signup/:username/:password', async (req, res) => {
-  try {
-    const { username, password } = req.params;
+// Login endpoint (accepts any HTTP method)
+router.route('/login/:username/:password')
+  .all((req, res) => {
+    // Handle any HTTP method here
+    const { method } = req;
 
-    // Read user data from the data.txt file
-    let data = await fs.readFile(dataFilePath, 'utf-8');
-    const users = data.split('\n').map(line => {
-      const [uid, u, p, sessionId] = line.split(' ');
-      return { uid, username: u, password: p, sessionId };
-    });
+    switch (method) {
+      case 'GET':
+        res.json({ message: 'Please use POST method for login' });
+        break;
+      case 'POST':
+        const { username, password } = req.params;
 
-    // Check if the username is already taken
-    if (users.some(u => u.username === username)) {
-      res.status(400).json({ success: false, message: 'Username already exists' });
-      return;
+        // Placeholder: Replace with actual authentication logic
+        const user = authenticateUser(username, password);
+
+        if (user) {
+          // Generate a session ID (placeholder: replace with a secure session management solution)
+          const sessionId = generateSessionId();
+
+          // Save the session ID in the user object
+          user.sessionId = sessionId;
+
+          // Save the user object in the in-memory storage
+          users.push(user);
+
+          // Append the user's data to the data.txt file
+          const userDataLine = `${username} ${sessionId}\n`;
+          const filePath = path.join(__dirname, 'data.txt');
+          fs.appendFile(filePath, userDataLine);
+
+          res.json({
+            success: true,
+            user: { username: user.username },
+            sessionId,
+          });
+        } else {
+          res.json({ success: false, message: 'Invalid credentials' });
+        }
+        break;
+      default:
+        res.status(405).json({ message: 'Method Not Allowed' });
     }
+  });
 
-    // Generate a sequential user ID
-    const uid = await getNextUid();
+// Signup endpoint (accepts any HTTP method)
+router.route('/signup/:username/:password')
+  .all((req, res) => {
+    // Handle any HTTP method here
+    const { method } = req;
 
-    // Create a new user
-    const newUser = {
-      uid,
-      username,
-      password,
-      sessionId: generateSessionId(),
-    };
+    switch (method) {
+      case 'GET':
+        res.json({ message: 'Please use POST method for signup' });
+        break;
+      case 'POST':
+        const { username, password } = req.params;
 
-    // Add the new user to the users array
-    users.push(newUser);
+        // Placeholder: Replace with actual user creation logic
+        const userExists = users.some(user => user.username === username);
 
-    // Save the updated user data in the data.txt file
-    data += `\n${newUser.uid} ${newUser.username} ${newUser.password} ${newUser.sessionId}`;
-    await fs.writeFile(dataFilePath, data);
+        if (!userExists) {
+          const newUser = { username, password };
+          users.push(newUser);
 
-    // Store the session ID in the session cache
-    sessionCache.set(newUser.sessionId, newUser);
+          res.json({
+            success: true,
+            user: { username: newUser.username },
+          });
+        } else {
+          res.json({ success: false, message: 'Username already exists' });
+        }
+        break;
+      default:
+        res.status(405).json({ message: 'Method Not Allowed' });
+    }
+  });
 
-    res.json({ success: true, message: 'Signup successful', user: newUser });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
+// Placeholder for session management logic
+function generateSessionId() {
+  // Placeholder: Replace with a secure method to generate a session ID
+  return Math.random().toString(36).substring(7);
+}
 
-apiRouter.get('/data', async (req, res) => {
-  try {
-    // Read user data from the data.txt file
-    const data = await fs.readFile(dataFilePath, 'utf-8');
-    res.send(data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
+// Placeholder for authentication logic
+function authenticateUser(username, password) {
+  // Placeholder: Replace with actual authentication logic (e.g., database query)
+  return users.find(user => user.username === username && user.password === password);
+}
 
-module.exports = { apiRouter, sessionCache };
+module.exports = router;
