@@ -1,11 +1,9 @@
 const express = require('express');
-const path = require('path');
-
 const app = express();
 const port = 3000;
 
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'views')));
+// Serve static files from the 'views' directory
+app.use(express.static(__dirname + '/views'));
 
 // Route for the root page
 app.get('/', (req, res) => {
@@ -14,7 +12,7 @@ app.get('/', (req, res) => {
 
 // Route for the dashboard page
 app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
+  res.sendFile(__dirname + '/views/dashboard.html');
 });
 
 // Route for displaying the free VPS page with iframe
@@ -37,4 +35,3 @@ app.get('/dashboard/free-vps', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-```
