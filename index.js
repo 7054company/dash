@@ -19,10 +19,9 @@ app.get('/dashboard', (req, res) => {
   dashboard.showDashboard(req, res);
 });
 
-// Route for displaying the free VPS page
+// Route for displaying the free VPS page - moved to dashboard.js
 app.get('/dashboard/free-vps', (req, res) => {
-  const websiteContent = '<h1>Welcome to the Free VPS Page!</h1><iframe src="https://6900-throbbing-dream-56293036.eu-ws3.runcode.io/vnc.html"></iframe>';
-  res.send(websiteContent);
+  dashboard.displayFreeVPSPage(req, res);
 });
 
 // Start the server
