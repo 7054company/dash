@@ -5,7 +5,7 @@ const app = express();
 const port = 3000;
 
 // Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'views')));
 
 // Route for the root page
 app.get('/', (req, res) => {
@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 
 // Route for the dashboard page
 app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'view', 'dashboard.html'));
+  res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
 });
 
 // Route for displaying the free VPS page with iframe
