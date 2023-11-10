@@ -1,23 +1,64 @@
+<!-- views/dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .dashboard-container {
+      text-align: center;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-message {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .ip-address {
+      font-size: 18px;
+      color: #555;
+    }
+
+    .return-link {
+      font-size: 16px;
+      color: #3498db;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome to the Dashboard</h1>
-    <p id="usernamePlaceholder">Logged-in as </p>
-    <!-- Add other dashboard content here -->
+  <div class="dashboard-container">
+    <div class="welcome-message" id="welcomeMessage"></div>
+    <div class="ip-address" id="ipAddress"></div>
+    <a class="return-link" href="/">Return to Welcome Page</a>
+  </div>
 
-    <script>
-        // Assuming you have a global variable loggedInUsername set by your server
-        // Replace this with your actual variable or session data handling
-        const loggedInUsername = '<%= user.username %>';
-        
-        // Update the content of the placeholder with the username
-        document.getElementById('usernamePlaceholder').innerText += loggedInUsername;
-    </script>
+  <script>
+    // You can use JavaScript to fetch and display the welcome message and IP address
+    fetch('/dashboard')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('welcomeMessage').innerText = data.message;
+        document.getElementById('ipAddress').innerText = `Your IP address: ${data.ip}`;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  </script>
 </body>
 </html>
