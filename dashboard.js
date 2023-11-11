@@ -107,38 +107,40 @@
     <h1 style="color: #000;">7ea Dashboard</h1>
   </header>
 
-  <nav>
-    <a onclick="showWidget('recentActivity')">Recent Activity</a>
-    <a onclick="showWidget('statistics')">Statistics</a>
-    <a onclick="showWidget('apps')">Apps</a>
-    <a onclick="showWidget('personal')">Personal</a>
-  </nav>
 
-  <div class="container">
-    <div class="widget" id="recentActivity">
-      <h2>Recent Activity</h2>
-      <p>Display recent activities and updates here.</p>
-      <button class="action-button">View Details</button>
+<nav>
+  <a onclick="showWidget('recentActivity')">Recent Activity</a>
+  <a onclick="showWidget('statistics')">Statistics</a>
+  <a onclick="showWidget('apps')">Apps</a>
+  <a onclick="showWidget('personal')">Personal</a>
+</nav>
+
+<div class="container">
+  <div class="widget" id="recentActivity">
+    <h2>Recent Activity</h2>
+    <p>Display recent activities and updates here.</p>
+    <button class="action-button" onclick="showUserDetails()">View Details</button>
+  </div>
+
+  <div class="widget" id="statistics">
+    <h2>Statistics</h2>
+    <p>Show key statistics and metrics.</p>
+    <button class="action-button" onclick="showUserDetails()">View Details</button>
+  </div>
+
+  <div class="widget" id="apps">
+    <!-- Content for the Apps widget goes here -->
+  </div>
+
+  <div class="widget" id="personal">
+    <h2>Personal</h2>
+    <button class="toggle-button" onclick="toggleUserDetails()" id="userButton">Show Data</button>
+    <div class="user-details" id="userDetails">
+      <!-- User details will be displayed here -->
     </div>
+  </div>
 
-    <div class="widget" id="statistics">
-      <h2>Statistics</h2>
-      <p>Show key statistics and metrics.</p>
-      <button class="action-button">Generate Report</button>
-    </div>
-
-    <div class="widget" id="apps">
-      <h2>Apps</h2>
-      <p>Explore and manage your applications here.</p>
-      <button class="action-button">Open App Store</button>
-    </div>
-
-    <div class="widget" id="personal">
-      <h2>Personal</h2>
-      <p>View and manage your personal data.</p>
-      <button class="action-button">Edit Personal Info</button>
-    </div>
-
+</div>
     <!-- Add more widgets and content as needed -->
 
   </div>
