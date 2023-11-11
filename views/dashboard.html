@@ -19,7 +19,7 @@
       color: #fff;
       padding: 10px 20px;
       text-align: center;
-      font-size: 18px;
+      font-size: 24px;
     }
 
     nav {
@@ -34,10 +34,15 @@
     nav a {
       color: #fff;
       text-decoration: none;
-      padding: 10px;
+      padding: 15px;
       margin: 5px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 18px;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #e4e4e4;
     }
 
     .container {
@@ -68,16 +73,15 @@
       background-color: #fd7e14; /* Instagram orange */
       border: none;
       color: white;
-      padding: 12px 24px;
+      padding: 15px 30px;
       text-align: center;
       text-decoration: none;
       display: inline-block;
-      font-size: 14px;
-      margin: 10px;
+      font-size: 18px;
+      margin: 15px;
       cursor: pointer;
-      border-radius: 5px;
+      border-radius: 8px;
       transition: background-color 0.3s ease; /* Color transition for the buttons */
-      animation: colorChange 5s infinite; /* Color change animation for the buttons */
     }
 
     .action-button:hover {
@@ -86,14 +90,6 @@
 
     .visible {
       display: block;
-    }
-
-    @keyframes colorChange {
-      0% { background-color: #fd7e14; }
-      25% { background-color: #833ab4; } /* Purple */
-      50% { background-color: #3a86ff; } /* Blue */
-      75% { background-color: #ff3e3e; } /* Red */
-      100% { background-color: #fd7e14; } /* Back to orange */
     }
   </style>
   <script>
@@ -176,5 +172,6 @@
     <!-- Add more widgets and content as needed -->
 
   </div>
+
 </body>
 </html>
