@@ -26,16 +26,16 @@
       padding: 10px;
       text-align: center;
       display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: space-around;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     nav a {
       color: #333;
       text-decoration: none;
       padding: 10px;
-      margin: 0 20px;
+      margin: 5px 0;
       cursor: pointer;
       font-size: 16px;
     }
