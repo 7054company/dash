@@ -26,16 +26,16 @@
       padding: 10px;
       text-align: center;
       display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: space-around;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     nav a {
       color: #333;
       text-decoration: none;
       padding: 10px;
-      margin: 0 20px;
+      margin: 5px 0;
       cursor: pointer;
       font-size: 16px;
     }
@@ -111,6 +111,7 @@
     <a onclick="showWidget('recentActivity')">Recent Activity</a>
     <a onclick="showWidget('statistics')">Statistics</a>
     <a onclick="showWidget('apps')">Apps</a>
+    <a onclick="showWidget('personal')">Personal</a>
   </nav>
 
   <div class="container">
@@ -130,6 +131,12 @@
       <h2>Apps</h2>
       <p>Explore and manage your applications here.</p>
       <button class="action-button">Open App Store</button>
+    </div>
+
+    <div class="widget" id="personal">
+      <h2>Personal</h2>
+      <p>View and manage your personal data.</p>
+      <button class="action-button">Edit Personal Info</button>
     </div>
 
     <!-- Add more widgets and content as needed -->
