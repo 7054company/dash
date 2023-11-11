@@ -3,7 +3,7 @@
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
-const secretKey = 'your-secret-key'; // Replace with your own secret key
+const secretKey = '12345'; // Replace with your own secret key
 
 function readUserData() {
   const rawData = fs.readFileSync('data.txt');
