@@ -9,6 +9,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "body-parser": "^1.19.0"
+    "jsonwebtoken": "^8.5.1",
+    "jquery": "^3.6.4" 
   },
   "devDependencies": {},
   "author": "Your Name",
