@@ -1,3 +1,6 @@
+Certainly! Here is the complete `dashboard.html` file with the added functionality to display user details in the "Personal" section:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,6 +101,30 @@
         selectedWidget.classList.add('visible');
       }
     }
+
+    function showUserDetails() {
+      var userDetailsDiv = document.getElementById('userDetails');
+
+      // Get user IP address using a third-party service (you can replace it with your own method)
+      fetch('https://api64.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          var userIp = data.ip;
+
+          // Get user browser information
+          var browserInfo = navigator.userAgent;
+
+          // Display user details
+          userDetailsDiv.innerHTML = `
+            <p>User IP: ${userIp}</p>
+            <p>Browser Info: ${browserInfo}</p>
+          `;
+        })
+        .catch(error => {
+          console.error('Error fetching IP address:', error);
+          userDetailsDiv.innerHTML = 'Unable to fetch user details.';
+        });
+    }
   </script>
 </head>
 <body>
@@ -135,7 +162,8 @@
     <div class="widget" id="personal">
       <h2>Personal</h2>
       <p>View and manage your personal data.</p>
-      <button class="action-button">Edit Personal Info</button>
+      <button class="action-button" onclick="showUserDetails()">Show User Details</button>
+      <div id="userDetails" style="margin-top: 10px;"></div>
     </div>
 
     <!-- Add more widgets and content as needed -->
@@ -144,3 +172,4 @@
 
 </body>
 </html>
+  
