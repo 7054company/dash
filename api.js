@@ -68,4 +68,5 @@ function getUserDetails(token) {
 module.exports = {
   verifyLogin,
   getUserDetails,
+  readUserData,
 };
