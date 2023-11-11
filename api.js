@@ -1,146 +1,71 @@
-const express = require('express');
-const router = express.Router();
-const fs = require('fs').promises;
-const path = require('path');
+// api.js
 
-// Placeholder for in-memory user data (replace with your database logic)
-const users = [];
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
-// Middleware to check if the user is logged in
-function isAuthenticated(req, res, next) {
-  const loggedInUser = req.cookies.loggedInUser;
-  const sessionId = req.cookies.sessionId;
+const secretKey = 'your-secret-key'; // Replace with your own secret key
 
-  if (loggedInUser && sessionId) {
-    const user = users.find(u => u.username === loggedInUser.username && u.sessionId === sessionId);
-    if (user) {
-      req.currentUser = user; // Attach the user data to the request
-      next();
-    } else {
-      res.status(401).json({ error: 'Unauthorized' });
-    }
+function readUserData() {
+  const rawData = fs.readFileSync('data.txt');
+  return JSON.parse(rawData);
+}
+
+function generateToken(user) {
+  return jwt.sign({ user }, secretKey, { expiresIn: '1h' }); // Token expires in 1 hour
+}
+
+function verifyLogin(userData, user, password) {
+  const foundUser = userData.find((u) => u.username === user || u.email === user);
+
+  if (foundUser && foundUser.password === password) {
+    const token = generateToken({
+      uid: foundUser.uid,
+      email: foundUser.email,
+      username: foundUser.username,
+    });
+
+    return {
+      success: true,
+      message: 'Login successful',
+      user: {
+        uid: foundUser.uid,
+        email: foundUser.email,
+        username: foundUser.username,
+        lastSession: foundUser.lastSession,
+        token,
+      },
+    };
   } else {
-    res.status(401).json({ error: 'Unauthorized' });
+    return {
+      success: false,
+      message: 'Invalid credentials',
+    };
   }
 }
 
-// API endpoint to get the current logged-in user data
-router.get('/user', isAuthenticated, async (req, res) => {
+function decodeToken(token) {
   try {
-    // Access the current user data from the request
-    const { username, sessionId } = req.currentUser;
-
-    // Read the data.txt file content
-    const filePath = path.join(__dirname, 'data.txt');
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-
-    // Find the user's data in the file content
-    const userDataRegex = new RegExp(`^${username} ${sessionId}$`, 'm');
-    const userDataMatch = fileContent.match(userDataRegex);
-
-    if (userDataMatch) {
-      res.json({
-        username,
-        sessionId,
-        // Add other user properties as needed
-      });
-    } else {
-      res.status(401).json({ error: 'Unauthorized' });
-    }
+    return jwt.verify(token, secretKey);
   } catch (error) {
-    console.error('Error reading data.txt:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    return null;
   }
-});
-
-// Login endpoint (accepts any HTTP method)
-router.route('/login/:username/:password')
-  .all((req, res) => {
-    // Handle any HTTP method here
-    const { method } = req;
-
-    switch (method) {
-      case 'GET':
-        res.json({ message: 'Please use POST method for login' });
-        break;
-      case 'POST':
-        const { username, password } = req.params;
-
-        // Placeholder: Replace with actual authentication logic
-        const user = authenticateUser(username, password);
-
-        if (user) {
-          // Generate a session ID (placeholder: replace with a secure session management solution)
-          const sessionId = generateSessionId();
-
-          // Save the session ID in the user object
-          user.sessionId = sessionId;
-
-          // Save the user object in the in-memory storage
-          users.push(user);
-
-          // Append the user's data to the data.txt file
-          const userDataLine = `${username} ${sessionId}\n`;
-          const filePath = path.join(__dirname, 'data.txt');
-          fs.appendFile(filePath, userDataLine);
-
-          res.json({
-            success: true,
-            user: { username: user.username },
-            sessionId,
-          });
-        } else {
-          res.json({ success: false, message: 'Invalid credentials' });
-        }
-        break;
-      default:
-        res.status(405).json({ message: 'Method Not Allowed' });
-    }
-  });
-
-// Signup endpoint (accepts any HTTP method)
-router.route('/signup/:username/:password')
-  .all((req, res) => {
-    // Handle any HTTP method here
-    const { method } = req;
-
-    switch (method) {
-      case 'GET':
-        res.json({ message: 'Please use POST method for signup' });
-        break;
-      case 'POST':
-        const { username, password } = req.params;
-
-        // Placeholder: Replace with actual user creation logic
-        const userExists = users.some(user => user.username === username);
-
-        if (!userExists) {
-          const newUser = { username, password };
-          users.push(newUser);
-
-          res.json({
-            success: true,
-            user: { username: newUser.username },
-          });
-        } else {
-          res.json({ success: false, message: 'Username already exists' });
-        }
-        break;
-      default:
-        res.status(405).json({ message: 'Method Not Allowed' });
-    }
-  });
-
-// Placeholder for session management logic
-function generateSessionId() {
-  // Placeholder: Replace with a secure method to generate a session ID
-  return Math.random().toString(36).substring(7);
 }
 
-// Placeholder for authentication logic
-function authenticateUser(username, password) {
-  // Placeholder: Replace with actual authentication logic (e.g., database query)
-  return users.find(user => user.username === username && user.password === password);
+function getUserDetails(token) {
+  const decodedToken = decodeToken(token);
+
+  if (!decodedToken) {
+    return { success: false, message: 'Unauthorized: Invalid token' };
+  }
+
+  // Assuming decodedToken.user contains user details (uid, email, username)
+  const { uid, email, username } = decodedToken.user;
+  const userWithoutPassword = { uid, email, username, lastSession: new Date() }; // Exclude password
+
+  return { success: true, user: userWithoutPassword };
 }
 
-module.exports = router;
+module.exports = {
+  verifyLogin,
+  getUserDetails,
+};
