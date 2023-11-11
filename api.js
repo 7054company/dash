@@ -1,9 +1,10 @@
+
 // api.js
 
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
-const secretKey = '12345'; // Replace with your own secret key
+const secretKey = '12345'; // Replace with your actual secret key
 
 function readUserData() {
   const rawData = fs.readFileSync('data.txt');
@@ -51,22 +52,9 @@ function decodeToken(token) {
   }
 }
 
-function getUserDetails(token) {
-  const decodedToken = decodeToken(token);
-
-  if (!decodedToken) {
-    return { success: false, message: 'Unauthorized: Invalid token' };
-  }
-
-  // Assuming decodedToken.user contains user details (uid, email, username)
-  const { uid, email, username } = decodedToken.user;
-  const userWithoutPassword = { uid, email, username, lastSession: new Date() }; // Exclude password
-
-  return { success: true, user: userWithoutPassword };
-}
-
 module.exports = {
-  verifyLogin,
-  getUserDetails,
   readUserData,
+  generateToken,
+  verifyLogin,
+  decodeToken,
 };
