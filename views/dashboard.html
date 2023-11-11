@@ -7,9 +7,40 @@
   <style>
     body {
       font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+
+    nav {
+      background-color: #555;
+      padding: 10px;
+      text-align: center;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      padding: 10px;
+      margin: 0 5px;
+      border-radius: 5px;
+      background-color: #777;
+      cursor: pointer;
+    }
+
+    .container {
       margin: 20px;
       padding: 20px;
-      background-color: #f4f4f4;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
 
     h1 {
@@ -17,27 +48,67 @@
     }
 
     .widget {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      padding: 10px;
       margin-bottom: 20px;
+      display: none;
+    }
+
+    .action-button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 5px;
     }
   </style>
+  <script>
+    function showWidget(widgetId) {
+      // Hide all widgets
+      var widgets = document.querySelectorAll('.widget');
+      widgets.forEach(function(widget) {
+        widget.style.display = 'none';
+      });
+
+      // Show the selected widget
+      var selectedWidget = document.getElementById(widgetId);
+      if (selectedWidget) {
+        selectedWidget.style.display = 'block';
+      }
+    }
+  </script>
 </head>
 <body>
-  <h1>Welcome to Your Dashboard</h1>
 
-  <div class="widget">
-    <h2>Recent Activity</h2>
-    <p>Display recent activities and updates here.</p>
+  <header>
+    <h1>Welcome to Your Dashboard</h1>
+  </header>
+
+  <nav>
+    <a onclick="showWidget('recentActivity')">Recent Activity</a>
+    <a onclick="showWidget('statistics')">Statistics</a>
+  </nav>
+
+  <div class="container">
+    <div class="widget" id="recentActivity">
+      <h2>Recent Activity</h2>
+      <p>Display recent activities and updates here.</p>
+      <button class="action-button">View Details</button>
+    </div>
+
+    <div class="widget" id="statistics">
+      <h2>Statistics</h2>
+      <p>Show key statistics and metrics.</p>
+      <button class="action-button">Generate Report</button>
+    </div>
+
+    <!-- Add more widgets and content as needed -->
+
   </div>
-
-  <div class="widget">
-    <h2>Statistics</h2>
-    <p>Show key statistics and metrics.</p>
-  </div>
-
-  <!-- Add more widgets and content as needed -->
 
 </body>
 </html>
