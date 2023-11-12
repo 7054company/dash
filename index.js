@@ -33,22 +33,14 @@ app.get('/f', (req, res) => {
   `);
 });
 
-// Route for handling login (using GET request)
-app.get('/api/login', (req, res) => {
-  const { user, password } = req.query;
+app.use(express.json());
 
-  if (!user || !password) {
-    return res.json({ success: false, message: 'Username and password are required' });
-  }
-
-  try {
-    const result = api.verifyLogin(user, password);
-    res.json(result);
-  } catch (error) {
-    console.error('Error during login:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
+app.get('/api/login/:username/:password', (req, res) => {
+  const { username, password } = req.params;
+  const result = api.verifyLogin(username, password);
+  res.json(result);
 });
+
 
 // Start the server
 app.listen(port, () => {
