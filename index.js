@@ -41,8 +41,13 @@ app.get('/api/login', (req, res) => {
     return res.json({ success: false, message: 'Username and password are required' });
   }
 
-  const result = api.verifyLogin(user, password);
-  res.json(result);
+  try {
+    const result = api.verifyLogin(user, password);
+    res.json(result);
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // Start the server
