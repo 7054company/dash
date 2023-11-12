@@ -10,7 +10,9 @@
     "express": "^4.17.1",
     "body-parser": "^1.19.0",
     "jsonwebtoken": "^8.5.1",
-    "jquery": "^3.6.4" 
+    "jquery": "^3.6.4", 
+     "crypto": "^1.0.1",
+    "node-cache": "^5.1.3"
   },
   "devDependencies": {},
   "author": "Your Name",
