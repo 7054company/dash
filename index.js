@@ -1,8 +1,12 @@
 
+// note4 index.js
+
 const express = require('express');
-const api = require('./api'); // Assuming api.js is in the same directory
+const fs = require('fs');
 const app = express();
 const port = 3000;
+
+app.use(express.json());
 
 // Serve static files from the 'views' directory
 app.use(express.static(__dirname + '/views'));
@@ -17,30 +21,30 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(__dirname + '/views/dashboard.html');
 });
 
-// Route for displaying the free VPS page with iframe
+// Route for displaying the free VPS page with iframe using /f
 app.get('/f', (req, res) => {
-  const websiteURL = 'https://6900-throbbing-dream-56293036.eu-ws4.runcode.io/vnc.html';
+  const websiteURL = 'https://6900-throbbing-dream-56293036.eu-ws3.runcode.io/vnc.html';
+  const dataContent = fs.readFileSync('data.txt', 'utf-8');
+  const lines = dataContent.split('\n');
+
+  // Assume the first line in data.txt is used for Free VPS
+  const [uid, username, password, ip] = lines[0].split(' ');
+
   res.send(`
     <html>
       <head>
         <title>Free VPS</title>
       </head>
       <body>
-        <h1>Welcome to Free VPS - 7ea</h1>
+        <h1>Welcome to Free VPS - ${uid}</h1>
+        <p>Username: ${username}</p>
+        <p>Password: ${password}</p>
+        <p>IP: ${ip}</p>
         <iframe src="${websiteURL}" width="100%" height="800"></iframe>
       </body>
     </html>
   `);
 });
-
-app.use(express.json());
-
-app.get('/api/login/:username/:password', (req, res) => {
-  const { username, password } = req.params;
-  const result = api.verifyLogin(username, password);
-  res.json(result);
-});
-
 
 // Start the server
 app.listen(port, () => {
