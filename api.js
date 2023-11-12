@@ -10,24 +10,13 @@ function verifyLogin(user, password) {
   const foundUser = userData.find((u) => u.username === user || u.email === user);
 
   if (foundUser && foundUser.password === password) {
-    return {
-      success: true,
-      message: 'Login successful',
-      user: {
-        uid: foundUser.uid,
-        email: foundUser.email,
-        username: foundUser.username,
-        lastSession: foundUser.lastSession,
-      },
-    };
+    return { success: true, message: 'Login successful' };
   } else {
-    return {
-      success: false,
-      message: 'Invalid credentials',
-    };
+    return { success: false, message: 'Invalid credentials' };
   }
 }
 
 module.exports = {
+  readUserData,
   verifyLogin,
 };
