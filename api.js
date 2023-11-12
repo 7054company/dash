@@ -1,22 +1,35 @@
+// apiModule.js
+
 const fs = require('fs');
+const crypto = require('crypto');
+const NodeCache = require('node-cache');
 
-function readUserData() {
-  const rawData = fs.readFileSync('data.txt');
-  return JSON.parse(rawData);
-}
+const cache = new NodeCache();
 
-function verifyLogin(user, password) {
-  const userData = readUserData();
-  const foundUser = userData.find((u) => u.username === user || u.email === user);
+function loginUser(username, password) {
+  // Read the content of data.txt
+  const dataContent = fs.readFileSync('data.txt', 'utf-8');
+  const lines = dataContent.split('\n');
 
-  if (foundUser && foundUser.password === password) {
-    return { success: true, message: 'Login successful' };
+  // Find the user in data.txt
+  const user = lines.find(line => {
+    const [uid, userUsername, userPassword] = line.split(' ');
+    return userUsername === username && userPassword === password;
+  });
+
+  if (user) {
+    // Generate a session ID (you might want to use a more secure method)
+    const sessionId = crypto.randomBytes(16).toString('hex');
+
+    // Save the session ID in cache
+    cache.set(sessionId, { username, uid: user.split(' ')[0] });
+
+    return { success: true, sessionId };
   } else {
-    return { success: false, message: 'Invalid credentials' };
+    return { success: false, message: 'Invalid username or password' };
   }
 }
 
 module.exports = {
-  readUserData,
-  verifyLogin,
+  loginUser,
 };
