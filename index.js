@@ -2,18 +2,19 @@
 
 const express = require('express');
 const fs = require('fs');
+const path = require('path');
 const app = express();
 const port = 3000;
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname + '/views')); // Assume dashboard.html is in a "public" directory
+app.use(express.static(__dirname + '/views')); // Assume dashboard.html and login.html are in a "views" directory
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Application!');
 });
 
 app.get('/login', (req, res) => {
-  res.sendFile(__dirname + '/login.html');
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
 app.post('/login', (req, res) => {
@@ -33,7 +34,7 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-  res.sendFile(__dirname + '/views/dashboard.html');
+  res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
 });
 
 app.listen(port, () => {
