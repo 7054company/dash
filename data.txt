@@ -1,1 +1,2 @@
-{"username": "john", "password": "12345"}
+johnDoe,password123
+aliceSmith,securePass456
