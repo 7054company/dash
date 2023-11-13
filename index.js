@@ -1,3 +1,4 @@
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -12,10 +13,15 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Define a route for /
 app.get('/', (req, res) => {
-  res.send('Welcome to the start!');
+  res.send('Welcome to the start! <a href="/login">Login</a>');
 });
 
 // Define a route for /login
+app.get('/login', (req, res) => {
+  const loginPath = path.join(__dirname, 'views', 'login.html');
+  res.sendFile(loginPath);
+});
+
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
