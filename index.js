@@ -1,57 +1,38 @@
 
 const express = require('express');
 const fs = require('fs');
-const path = require('path');
 const app = express();
 const port = 3000;
 
-// Middleware to parse incoming JSON requests
+// Middleware to parse JSON and form data
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Set the views directory
-app.set('views', path.join(__dirname, 'views'));
-
-// Define a route for /
-app.get('/', (req, res) => {
-  res.send('Welcome to the start! <a href="/login">Login</a>');
-});
-
-// Define a route for /login
-app.get('/login', (req, res) => {
-  const loginPath = path.join(__dirname, 'views', 'login.html');
-  res.sendFile(loginPath);
-});
-
+// Define a route handler for the login path
 app.post('/login', (req, res) => {
+  // Get username and password from the request body
   const { username, password } = req.body;
 
-  // Read user and password data from data.txt
+  // Read user data from the "data.txt" file
   fs.readFile('data.txt', 'utf8', (err, data) => {
     if (err) {
       console.error(err);
-      res.status(500).send('Internal Server Error');
-      return;
+      return res.status(500).send('Internal Server Error');
     }
 
-    // Parse the data from data.txt (assuming JSON format for simplicity)
+    // Parse the data as JSON
     const userData = JSON.parse(data);
 
-    // Check if the provided username and password match
-    if (username === userData.username && password === userData.password) {
-      // Redirect the logged-in user to /dashboard
-      res.redirect('/dashboard');
+    // Verify username and password
+    if (userData.username === username && userData.password === password) {
+      res.send('Login successful!');
     } else {
-      res.status(401).send('Invalid username or password');
+      res.status(401).send('Unauthorized: Invalid username or password');
     }
   });
 });
 
-// Define a route for /dashboard
-app.get('/dashboard', (req, res) => {
-  const dashboardPath = path.join(__dirname, 'views', 'dashboard.html');
-  res.sendFile(dashboardPath);
-});
-
+// Start the server
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}/`);
+  console.log(`Server is running at http://localhost:${port}`);
 });
