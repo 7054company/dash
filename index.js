@@ -54,7 +54,7 @@ app.post('/login', (req, res) => {
     return res.send(`
       Login successful. Welcome to the dashboard, ${username}!
       Your authentication token is: ${authToken}
-      <a href="/dashboard">Go to Dashboard</a>
+      <a href="/dashboard?authtoken=${authToken}">Go to Dashboard</a>
       <script>
         // Store the authentication token in local storage
         localStorage.setItem('authToken', '${authToken}');
@@ -68,15 +68,15 @@ app.post('/login', (req, res) => {
 
 app.get('/dashboard', (req, res) => {
   // Retrieve the authentication token from local storage
-  const authToken = localStorage.getItem('authToken');
+  const clientAuthToken = req.query.authtoken || localStorage.getItem('authToken');
 
   // Check if the authentication token is present
-  if (authToken) {
+  if (clientAuthToken) {
     // Find the user data associated with the authentication token in the server's cache
-    const userData = cache[authToken];
+    const userData = cache[clientAuthToken];
 
     // Check if user data is found and the authToken matches
-    if (userData && userData.authToken === authToken) {
+    if (userData && userData.authToken === clientAuthToken) {
       const { username } = userData;
       // Display a welcome message with the username
       return res.send(`Welcome to the dashboard, ${username}!`);
