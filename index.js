@@ -51,20 +51,22 @@ app.post('/login', (req, res) => {
     req.session.userId = username;
 
     // Redirect to /dashboard upon successful login
-    res.redirect('/dashboard');
-  } else {
-    res.send('Invalid login credentials. Please try again.');
+    return res.redirect('/dashboard');
   }
+
+  // If login is unsuccessful, show an error message
+  res.send('Invalid login credentials. Please try again.');
 });
 
 app.get('/dashboard', (req, res) => {
   // Check if the user is authenticated by verifying the session ID
   const userId = req.session.userId;
   if (userId && users[userId] && req.sessionID === users[userId].sessionId) {
-    res.send(`Welcome to the dashboard, ${userId}!`);
-  } else {
-    res.redirect('/');
+    return res.send(`Welcome to the dashboard, ${userId}!`);
   }
+
+  // If not authenticated, redirect to login
+  res.redirect('/');
 });
 
 app.listen(port, () => {
