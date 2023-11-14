@@ -54,7 +54,7 @@ app.post('/login', (req, res) => {
     return res.send(`
       Login successful. Welcome to the dashboard, ${username}!
       Your authentication token is: ${authToken}
-      <a href="/dashboard" onclick="openDashboard('${authToken}')">Go to Dashboard</a>
+      <a href="/dashboard">Go to Dashboard</a>
       <script>
         // Store the authentication token in local storage
         localStorage.setItem('authToken', '${authToken}');
@@ -68,16 +68,22 @@ app.post('/login', (req, res) => {
 
 app.get('/dashboard', (req, res) => {
   // Retrieve the authentication token from local storage
-  const authToken = req.headers.authorization || localStorage.getItem('authToken');
+  const authToken = localStorage.getItem('authToken');
 
-  // Use the authentication token as the Authorization header in subsequent requests
-  return res.send(`
-    Welcome to the dashboard!
-    <script>
-      // Store the authentication token in local storage for future requests
-      localStorage.setItem('authToken', '${authToken}');
-    </script>
-  `);
+  // Check if the authentication token is present
+  if (authToken) {
+    // Use the authentication token as the Authorization header in subsequent requests
+    return res.send(`
+      Welcome to the dashboard!
+      <script>
+        // Store the authentication token in local storage for future requests
+        localStorage.setItem('authToken', '${authToken}');
+      </script>
+    `);
+  }
+
+  // If not authenticated, redirect to login
+  return res.redirect('/');
 });
 
 app.listen(port, () => {
