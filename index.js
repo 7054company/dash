@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Middleware for session management
 app.use(session({
-  secret: 'your-secret-key',
+  secret: '1111',
   resave: false,
   saveUninitialized: true
 }));
