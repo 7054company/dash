@@ -1,17 +1,21 @@
 const express = require('express');
 const fs = require('fs');
 const bodyParser = require('body-parser');
+const crypto = require('crypto');
 const app = express();
 const port = 3000;
 
 // Middleware to parse incoming request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// In-memory cache to store authentication tokens
+const tokenCache = {};
+
 // Read user credentials from data.txt
 const users = {};
 fs.readFileSync('data.txt', 'utf-8').split('\n').forEach(line => {
   const [uid, username, password] = line.trim().split(' ');
-  users[username] = { uid, password, lastLoginIP: null };
+  users[username] = { uid, password, lastLoginIP: null, authToken: null };
 });
 
 app.get('/', (req, res) => {
@@ -37,6 +41,11 @@ app.post('/login', (req, res) => {
     // Update lastLoginIP for the user
     users[username].lastLoginIP = req.ip;
 
+    // Generate an authentication token and save it in the user object and in the cache
+    const authToken = generateAuthToken();
+    users[username].authToken = authToken;
+    tokenCache[authToken] = username;
+
     // Display a success message and redirect to /dashboard upon successful login
     return res.send(`Login successful. Welcome to the dashboard, ${username}! <a href="/dashboard">Go to Dashboard</a>`);
   }
@@ -46,10 +55,11 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-  const username = req.query.username;
+  const authToken = req.headers.authorization;
 
-  // Check if the user is authenticated
-  if (users[username] && users[username].lastLoginIP === req.ip) {
+  // Check if the authentication token is valid
+  const username = tokenCache[authToken];
+  if (username && users[username] && users[username].authToken === authToken) {
     return res.send(`Welcome to the dashboard, ${username}!`);
   }
 
@@ -60,3 +70,8 @@ app.get('/dashboard', (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+// Helper function to generate an authentication token
+function generateAuthToken() {
+  return crypto.randomBytes(24).toString('hex');
+}
