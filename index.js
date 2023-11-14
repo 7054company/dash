@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const app = express();
@@ -7,11 +8,18 @@ const port = 3000;
 // Middleware to parse incoming request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Middleware for session management
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true
+}));
+
 // Read user credentials from data.txt
 const users = {};
 fs.readFileSync('data.txt', 'utf-8').split('\n').forEach(line => {
-  const [username, password] = line.trim().split(' ');
-  users[username] = password;
+  const [uid, username, password] = line.trim().split(' ');
+  users[username] = { uid, password, lastLoginIP: null, sessionId: null };
 });
 
 app.get('/', (req, res) => {
@@ -33,7 +41,15 @@ app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   // Check if the provided credentials match the values from data.txt
-  if (users[username] && users[username] === password) {
+  if (users[username] && users[username].password === password) {
+    // Update lastLoginIP for the user
+    users[username].lastLoginIP = req.ip;
+
+    // Generate a session ID and save it in the user object and in the session
+    const sessionId = generateSessionId();
+    users[username].sessionId = sessionId;
+    req.session.userId = username;
+
     // Redirect to /dashboard upon successful login
     res.redirect('/dashboard');
   } else {
@@ -42,9 +58,20 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-  res.send('Welcome to the dashboard!');
+  // Check if the user is authenticated by verifying the session ID
+  const userId = req.session.userId;
+  if (userId && users[userId] && req.sessionID === users[userId].sessionId) {
+    res.send(`Welcome to the dashboard, ${userId}!`);
+  } else {
+    res.redirect('/');
+  }
 });
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+// Helper function to generate a session ID (for demonstration purposes)
+function generateSessionId() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
