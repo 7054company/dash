@@ -94,7 +94,7 @@ app.get('/dashboard', (req, res) => {
 
 app.get('/dash', (req, res) => {
   // Retrieve the authentication token from local storage
-  const clientAuthToken = req.query.authtoken || localStorage.getItem('authToken');
+  const clientAuthToken = localStorage.getItem('authToken');
 
   // Check if the authentication token is present
   if (clientAuthToken) {
@@ -108,7 +108,7 @@ app.get('/dash', (req, res) => {
     }
   }
 
-  // If not authenticated, redirect to login
+  // If not authenticated or tokens don't match, redirect to login
   return res.redirect('/');
 });
 
@@ -120,3 +120,4 @@ app.listen(port, () => {
 function generateAuthToken() {
   return crypto.randomBytes(24).toString('hex');
 }
+
