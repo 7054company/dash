@@ -10,8 +10,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Middleware for session management
 app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
+  secret: '1111',
+  resave: true,
   saveUninitialized: true
 }));
 
@@ -66,7 +66,7 @@ app.get('/dashboard', (req, res) => {
   }
 
   // If not authenticated, redirect to login
-  res.redirect('/');
+  return res.redirect('/');
 });
 
 app.listen(port, () => {
