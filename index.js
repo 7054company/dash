@@ -46,8 +46,8 @@ app.post('/login', (req, res) => {
     users[username].authToken = authToken;
     tokenCache[authToken] = username;
 
-    // Display a success message and redirect to /dashboard upon successful login
-    return res.send(`Login successful. Welcome to the dashboard, ${username}! <a href="/dashboard">Go to Dashboard</a>`);
+    // Display a success message with the authentication token
+    return res.send(`Login successful. Welcome to the dashboard, ${username}! Your authentication token is: ${authToken} <a href="/dashboard">Go to Dashboard</a>`);
   }
 
   // If login is unsuccessful, show an error message
