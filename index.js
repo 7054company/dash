@@ -1,40 +1,48 @@
-// index.js
-
 const express = require('express');
 const fs = require('fs');
-const path = require('path');
+const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname + '/views')); // Assume dashboard.html and login.html are in a "views" directory
+// Middleware to parse incoming request bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-  res.send('Welcome to the Application!');
+// Read user credentials from data.txt
+const users = {};
+fs.readFileSync('data.txt', 'utf-8').split('\n').forEach(line => {
+  const [username, password] = line.trim().split(' ');
+  users[username] = password;
 });
 
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'login.html'));
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>Login</h1>
+    <form action="/login" method="post">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+      <br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <br>
+      <button type="submit">Login</button>
+    </form>
+  `);
 });
 
 app.post('/login', (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
+  const { username, password } = req.body;
 
-  // Read user and password data from data.txt
-  const data = fs.readFileSync('data.txt', 'utf8');
-  const [savedUsername, savedPassword] = data.split(',');
-
-  // Verify the credentials
-  if (username === savedUsername && password === savedPassword) {
+  // Check if the provided credentials match the values from data.txt
+  if (users[username] && users[username] === password) {
+    // Redirect to /dashboard upon successful login
     res.redirect('/dashboard');
   } else {
-    res.send('Invalid credentials. Please try again.');
+    res.send('Invalid login credentials. Please try again.');
   }
 });
 
 app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
+  res.send('Welcome to the dashboard!');
 });
 
 app.listen(port, () => {
