@@ -1,7 +1,8 @@
 const express = require('express');
-const fs = require('fs');
 const bodyParser = require('body-parser');
+const path = require('path');
 const crypto = require('crypto');
+const fs = require('fs');
 const app = express();
 const port = 3000;
 
@@ -10,6 +11,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // In-memory cache to store user data and authentication tokens
 const cache = {};
+
+// Set the views directory
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'html');
 
 // Read user credentials from data.txt
 const users = {};
@@ -54,7 +59,7 @@ app.post('/login', (req, res) => {
     return res.send(`
       Login successful. Welcome to the dashboard, ${username}!
       Your authentication token is: ${authToken}
-      <a href="/dashboard?authtoken=${authToken}">Go to Dashboard</a>
+      <a href="/dashboard">Go to Dashboard</a>
       <script>
         // Store the authentication token in local storage
         localStorage.setItem('authToken', '${authToken}');
@@ -80,6 +85,26 @@ app.get('/dashboard', (req, res) => {
       const { username } = userData;
       // Display a welcome message with the username
       return res.send(`Welcome to the dashboard, ${username}!`);
+    }
+  }
+
+  // If not authenticated, redirect to login
+  return res.redirect('/');
+});
+
+app.get('/dash', (req, res) => {
+  // Retrieve the authentication token from local storage
+  const clientAuthToken = req.query.authtoken || localStorage.getItem('authToken');
+
+  // Check if the authentication token is present
+  if (clientAuthToken) {
+    // Find the user data associated with the authentication token in the server's cache
+    const userData = cache[clientAuthToken];
+
+    // Check if user data is found and the authToken matches
+    if (userData && userData.authToken === clientAuthToken) {
+      // Send the dashboard.html file as the response
+      return res.sendFile('dashboard.html', { root: path.join(__dirname, 'views') });
     }
   }
 
