@@ -50,8 +50,16 @@ app.post('/login', (req, res) => {
     // Store user data and authentication token in cache
     cache[username] = { ...users[username], authToken };
 
-    // Display a success message with the authentication token
-    return res.send(`Login successful. Welcome to the dashboard, ${username}! Your authentication token is: ${authToken} <a href="/dashboard">Go to Dashboard</a>`);
+    // Display a success message with the authentication token and link to the dashboard
+    return res.send(`
+      Login successful. Welcome to the dashboard, ${username}!
+      Your authentication token is: ${authToken}
+      <a href="/dashboard" onclick="openDashboard('${authToken}')">Go to Dashboard</a>
+      <script>
+        // Store the authentication token in local storage
+        localStorage.setItem('authToken', '${authToken}');
+      </script>
+    `);
   }
 
   // If login is unsuccessful, show an error message
@@ -59,12 +67,20 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-  const authToken = req.headers.authorization;
+  // Retrieve the authentication token from local storage
+  const authToken = req.headers.authorization || localStorage.getItem('authToken');
 
   // Check if the authentication token is valid
   const userData = Object.values(cache).find(user => user.authToken === authToken);
   if (userData) {
-    return res.send(`Welcome to the dashboard, ${userData.username}!`);
+    // Use the authentication token as the Authorization header in subsequent requests
+    return res.send(`
+      Welcome to the dashboard, ${userData.username}!
+      <script>
+        // Store the authentication token in local storage for future requests
+        localStorage.setItem('authToken', '${authToken}');
+      </script>
+    `);
   }
 
   // If not authenticated, redirect to login
