@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Middleware for session management
 app.use(session({
-  secret: '1111',
+  secret: 'your-secret-key',
   resave: false,
   saveUninitialized: true
 }));
@@ -50,8 +50,8 @@ app.post('/login', (req, res) => {
     users[username].sessionId = sessionId;
     req.session.userId = username;
 
-    // Redirect to /dashboard upon successful login
-    return res.redirect('/dashboard');
+    // Display a success message and redirect to /dashboard upon successful login
+    return res.send(`Login successful. Welcome to the dashboard, ${username}! <a href="/dashboard">Go to Dashboard</a>`);
   }
 
   // If login is unsuccessful, show an error message
