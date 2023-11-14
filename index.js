@@ -1,5 +1,4 @@
 const express = require('express');
-const session = require('express-session');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const app = express();
@@ -8,18 +7,11 @@ const port = 3000;
 // Middleware to parse incoming request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Middleware for session management
-app.use(session({
-  secret: '1111',
-  resave: true,
-  saveUninitialized: true
-}));
-
 // Read user credentials from data.txt
 const users = {};
 fs.readFileSync('data.txt', 'utf-8').split('\n').forEach(line => {
   const [uid, username, password] = line.trim().split(' ');
-  users[username] = { uid, password, lastLoginIP: null, sessionId: null };
+  users[username] = { uid, password, lastLoginIP: null };
 });
 
 app.get('/', (req, res) => {
@@ -45,11 +37,6 @@ app.post('/login', (req, res) => {
     // Update lastLoginIP for the user
     users[username].lastLoginIP = req.ip;
 
-    // Generate a session ID and save it in the user object and in the session
-    const sessionId = generateSessionId();
-    users[username].sessionId = sessionId;
-    req.session.userId = username;
-
     // Display a success message and redirect to /dashboard upon successful login
     return res.send(`Login successful. Welcome to the dashboard, ${username}! <a href="/dashboard">Go to Dashboard</a>`);
   }
@@ -59,10 +46,11 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-  // Check if the user is authenticated by verifying the session ID
-  const userId = req.session.userId;
-  if (userId && users[userId] && req.sessionID === users[userId].sessionId) {
-    return res.send(`Welcome to the dashboard, ${userId}!`);
+  const username = req.query.username;
+
+  // Check if the user is authenticated
+  if (users[username] && users[username].lastLoginIP === req.ip) {
+    return res.send(`Welcome to the dashboard, ${username}!`);
   }
 
   // If not authenticated, redirect to login
@@ -72,8 +60,3 @@ app.get('/dashboard', (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
-
-// Helper function to generate a session ID (for demonstration purposes)
-function generateSessionId() {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-}
