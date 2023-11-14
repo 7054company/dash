@@ -8,8 +8,8 @@ const port = 3000;
 // Middleware to parse incoming request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// In-memory cache to store authentication tokens
-const tokenCache = {};
+// In-memory cache to store user data and authentication tokens
+const cache = {};
 
 // Read user credentials from data.txt
 const users = {};
@@ -41,10 +41,14 @@ app.post('/login', (req, res) => {
     // Update lastLoginIP for the user
     users[username].lastLoginIP = req.ip;
 
-    // Generate an authentication token and save it in the user object and in the cache
+    // Generate an authentication token
     const authToken = generateAuthToken();
+    
+    // Save authentication token in user object
     users[username].authToken = authToken;
-    tokenCache[authToken] = username;
+
+    // Store user data and authentication token in cache
+    cache[username] = { ...users[username], authToken };
 
     // Display a success message with the authentication token
     return res.send(`Login successful. Welcome to the dashboard, ${username}! Your authentication token is: ${authToken} <a href="/dashboard">Go to Dashboard</a>`);
@@ -58,9 +62,9 @@ app.get('/dashboard', (req, res) => {
   const authToken = req.headers.authorization;
 
   // Check if the authentication token is valid
-  const username = tokenCache[authToken];
-  if (username && users[username] && users[username].authToken === authToken) {
-    return res.send(`Welcome to the dashboard, ${username}!`);
+  const userData = Object.values(cache).find(user => user.authToken === authToken);
+  if (userData) {
+    return res.send(`Welcome to the dashboard, ${userData.username}!`);
   }
 
   // If not authenticated, redirect to login
