@@ -55,6 +55,10 @@ app.post('/login', (req, res) => {
       Login successful. Welcome to the dashboard, ${username}!
       Your authentication token is: ${authToken}
       <a href="/dashboard">Go to Dashboard</a>
+      <script>
+        // Store the authentication token in local storage
+        localStorage.setItem('authToken', '${authToken}');
+      </script>
     `);
   }
 
@@ -63,7 +67,24 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-  res.send(`Welcome to the dashboard!`);
+  // Retrieve the authentication token from local storage
+  const authToken = localStorage.getItem('authToken');
+
+  // Check if the authentication token is present
+  if (authToken) {
+    // Find the user data associated with the authentication token in the server's cache
+    const userData = cache[authToken];
+
+    // Check if user data is found and the authToken matches
+    if (userData && userData.authToken === authToken) {
+      const { username } = userData;
+      // Display a welcome message with the username
+      return res.send(`Welcome to the dashboard, ${username}!`);
+    }
+  }
+
+  // If not authenticated, redirect to login
+  return res.redirect('/');
 });
 
 app.listen(port, () => {
