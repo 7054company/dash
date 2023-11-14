@@ -48,17 +48,12 @@ app.post('/login', (req, res) => {
     users[username].authToken = authToken;
 
     // Store user data and authentication token in cache
-    cache[username] = { ...users[username], authToken };
+    cache[authToken] = { ...users[username] };
 
-    // Display a success message with the authentication token and link to the dashboard
+    // Display a welcome message with the username
     return res.send(`
-      Login successful. Welcome to the dashboard, ${username}!
-      Your authentication token is: ${authToken}
+      Welcome to the dashboard, ${username}!
       <a href="/dashboard">Go to Dashboard</a>
-      <script>
-        // Store the authentication token in local storage
-        localStorage.setItem('authToken', '${authToken}');
-      </script>
     `);
   }
 
@@ -72,13 +67,13 @@ app.get('/dashboard', (req, res) => {
 
   // Check if the authentication token is present
   if (authToken) {
-    // Find the user data associated with the authentication token
-    const userData = Object.values(cache).find(user => user.authToken === authToken);
+    // Find the user data associated with the authentication token in the server's cache
+    const userData = cache[authToken];
 
     // Check if user data is found
     if (userData) {
       const { username } = userData;
-      // Use the authentication token as the Authorization header in subsequent requests
+      // Display a welcome message with the username
       return res.send(`Welcome to the dashboard, ${username}!`);
     }
   }
