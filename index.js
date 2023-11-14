@@ -72,14 +72,15 @@ app.get('/dashboard', (req, res) => {
 
   // Check if the authentication token is present
   if (authToken) {
-    // Use the authentication token as the Authorization header in subsequent requests
-    return res.send(`
-      Welcome to the dashboard!
-      <script>
-        // Store the authentication token in local storage for future requests
-        localStorage.setItem('authToken', '${authToken}');
-      </script>
-    `);
+    // Find the user data associated with the authentication token
+    const userData = Object.values(cache).find(user => user.authToken === authToken);
+
+    // Check if user data is found
+    if (userData) {
+      const { username } = userData;
+      // Use the authentication token as the Authorization header in subsequent requests
+      return res.send(`Welcome to the dashboard, ${username}!`);
+    }
   }
 
   // If not authenticated, redirect to login
